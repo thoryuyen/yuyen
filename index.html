@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuyen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #fff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #fff;
+            font-size: 1em;
+            margin-top: -10px;
+            animation: fadeIn 2.5s ease-in-out;
+        }
+
+        button {
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 0px;
+            animation: fadeIn 4s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #ff4b61;
+            transform: scale(1.05);
+            transition: 0.3s;
+        }
+
+        .content {
+            display: none;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        .content img {
+            width: 70%; /* 設定圖片的寬度為70% */
+            max-width: 400px; /* 最大寬度設為400px */
+            height: auto; /* 高度自動調整以保持長寬比 */
+            margin: 20px 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .content p {
+            font-size: 1.2em;
+            line-height: 0.5;
+            color: #fff;
+        }
+
+        /* 背景動畫 */
+        @keyframes backgroundMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+        body {
+            background-size: 400% 400%;
+            animation: backgroundMove 15s infinite alternate;
+        }
+
+        /* 淡入動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 煙火效果 */
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .firework {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: riseAndExplode 2s ease-out forwards;
+        }
+
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkAnimation 1s ease-out forwards;
+        }
+
+        /* 添加一個新的樣式，讓圖片和文字並排顯示 */
+        .text-and-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px; /* 設定圖片與文字之間的間隔 */
+        }
+
+        .text-and-image p {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 0;
+        }
+
+        /* 調整表情貼圖片的大小，防止被其他屬性干擾 */
+        .emoji {
+            width: 50px !important;  /* 強制設定寬度為 50px */
+            height: 50px !important; /* 強制設定高度為 50px，保持圖片比例 */
+            object-fit: contain; /* 保持圖片比例，避免變形 */
+            border-radius: 8px;
+        }
+
+        @keyframes riseAndExplode {
+            0% {
+                transform: scale(0) translate(0, 0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1) translate(0, -200px); /* 煙火升空 */
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4) translate(var(--x), var(--y)); /* 爆炸 */
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkAnimation {
+            0% {
+                opacity: 1;
+                transform: scale(0) translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5) translate(var(--sx), var(--sy));
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>給我的寶貝 Yuyen</h1>
+    <h2>I love you for all that you are, all that you have been, and all you’re yet to be.</h2>
+    <h2>我愛妳的全部，包含當下、曾經以及未來的妳。</h2>
+    <button id="startButton">點擊開始</button>
+
+    <div class="content" id="step1">
+        <img src="images/01.jpg" alt="圖片1">
+        <p>我們因相遇、相識到相愛</p>
+        <p>生活因為有妳變得不一樣</p>
+        <button class="nextButton" data-next="step2">繼續下一段</button>
+    </div>
+
+    <div class="content" id="step2">
+        <img src="images/02.jpg" alt="圖片2">
+        <p>從那之後，每一天的日子都像有了色彩</p>
+        <p>寶貝的笑容就是我每天的動力</p>
+        <button class="nextButton" data-next="step3">繼續下一段</button>
+    </div>
+
+    <div class="content" id="step3">
+        <img src="images/03.jpg" alt="圖片3">
+        <p>最後我想對妳說，未來請多多指教</p>
+        <p>我會陪伴著妳，一起度過未來的每一天</p>
+        <div class="text-and-image">
+            <p>我愛妳</p>
+            <img src="images/04.png" alt="表情貼" class="emoji">
+        </div>
+    </div>
+
+    <!-- 煙火效果容器 -->
+    <div class="fireworks" id="fireworks"></div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const nextButtons = document.querySelectorAll('.nextButton');
+        const fireworksContainer = document.getElementById('fireworks');
+
+        startButton.addEventListener('click', () => {
+            document.getElementById('step1').style.display = 'block';
+            startButton.style.display = 'none';
+        });
+
+        nextButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const currentContent = button.parentElement;
+                const nextStep = document.getElementById(button.dataset.next);
+
+                currentContent.style.display = 'none';
+                if (nextStep) {
+                    nextStep.style.display = 'block';
+                }
+
+                // 當顯示第三張圖片時，自動執行煙火效果
+                if (nextStep && nextStep.id === 'step3') {
+                    showIncreasingFireworks();
+                }
+            });
+        });
+
+        // 顯示煙火效果，數量隨著時間增加
+        function showIncreasingFireworks() {
+            fireworksContainer.style.display = 'block';
+
+            let fireworkInterval = 1000; // 初始間隔時間（減慢發射頻率）
+            let fireworkCount = 1; // 初始煙火數量
+
+            setInterval(() => {
+                // 隨著時間增加煙火數量
+                for (let i = 0; i < fireworkCount; i++) {
+                    // 隨機顏色
+                    const colors = ['#ff6b81', '#ffdf00', '#00ff00', '#0000ff', '#ff00ff', '#00ffff'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+                    // 隨機位置
+                    const fireworkX = Math.random() * window.innerWidth;
+                    const fireworkY = Math.random() * window.innerHeight;
+
+                    const firework = document.createElement('div');
+                    firework.classList.add('firework');
+                    firework.style.left = `${fireworkX}px`;
+                    firework.style.top = `${fireworkY}px`;
+                    firework.style.backgroundColor = randomColor;
+                    firework.style.setProperty('--x', `${(Math.random() - 0.5) * 400}px`);
+                    firework.style.setProperty('--y', `${(Math.random() - 0.5) * 400}px`);
+
+                    fireworksContainer.appendChild(firework);
+
+                    // 爆炸時生成火花
+                    setTimeout(() => {
+                        for (let j = 0; j < 10; j++) { // 減少火花數量
+                            const spark = document.createElement('div');
+                            spark.classList.add('spark');
+                            spark.style.left = `${fireworkX}px`;
+                            spark.style.top = `${fireworkY}px`;
+                            spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 300}px`);
+                            spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 300}px`);
+                            spark.style.backgroundColor = randomColor; // 火花顏色
+                            fireworksContainer.appendChild(spark);
+                            setTimeout(() => spark.remove(), 1000);
+                        }
+                    }, 1000);
+
+                    // 移除煙火
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 2000);
+                }
+
+                fireworkCount++; // 每次增加煙火數量
+                fireworkInterval = Math.max(fireworkInterval - 50, 100); // 控制煙火間隔時間縮短
+
+            }, fireworkInterval);
+        }
+    </script>
+</body>
+</html>
