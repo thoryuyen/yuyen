@@ -19,6 +19,12 @@
             min-height: 100vh;
             color: #333;
             text-align: center;
+            position: relative;
+        }
+
+        h1, h2 {
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
@@ -62,9 +68,9 @@
         }
 
         .content img {
-            width: 70%; /* 設定圖片的寬度為70% */
-            max-width: 400px; /* 最大寬度設為400px */
-            height: auto; /* 高度自動調整以保持長寬比 */
+            width: 70%;
+            max-width: 400px;
+            height: auto;
             margin: 20px 0;
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -76,23 +82,11 @@
             color: #fff;
         }
 
-        /* 背景動畫 */
-        @keyframes backgroundMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 100% 100%; }
-        }
-        body {
-            background-size: 400% 400%;
-            animation: backgroundMove 15s infinite alternate;
-        }
-
-        /* 淡入動畫 */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 煙火效果 */
         .fireworks {
             position: fixed;
             top: 0;
@@ -104,30 +98,20 @@
             display: none;
         }
 
-        .firework {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            opacity: 0;
-            animation: riseAndExplode 2s ease-out forwards;
+        @keyframes backgroundMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+        body {
+            background-size: 400% 400%;
+            animation: backgroundMove 15s infinite alternate;
         }
 
-        .spark {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            opacity: 0;
-            animation: sparkAnimation 1s ease-out forwards;
-        }
-
-        /* 添加一個新的樣式，讓圖片和文字並排顯示 */
         .text-and-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px; /* 設定圖片與文字之間的間隔 */
+            gap: 20px;
         }
 
         .text-and-image p {
@@ -136,38 +120,11 @@
             margin: 0;
         }
 
-        /* 調整表情貼圖片的大小，防止被其他屬性干擾 */
         .emoji {
-            width: 50px !important;  /* 強制設定寬度為 50px */
-            height: 50px !important; /* 強制設定高度為 50px，保持圖片比例 */
-            object-fit: contain; /* 保持圖片比例，避免變形 */
+            width: 50px !important;
+            height: 50px !important;
+            object-fit: contain;
             border-radius: 8px;
-        }
-
-        @keyframes riseAndExplode {
-            0% {
-                transform: scale(0) translate(0, 0);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1) translate(0, -200px); /* 煙火升空 */
-                opacity: 1;
-            }
-            100% {
-                transform: scale(4) translate(var(--x), var(--y)); /* 爆炸 */
-                opacity: 0;
-            }
-        }
-
-        @keyframes sparkAnimation {
-            0% {
-                opacity: 1;
-                transform: scale(0) translate(0, 0);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.5) translate(var(--sx), var(--sy));
-            }
         }
     </style>
 </head>
@@ -201,12 +158,14 @@
         </div>
     </div>
 
-    <!-- 煙火效果容器 -->
-    <div class="fireworks" id="fireworks"></div>
+    <button id="memoryButton" style="display: none; position: absolute; top: 20px; right: 20px; background-color: #ff6b81; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1em; cursor: pointer;">回憶</button>
+
+    <div id="fireworks" class="fireworks"></div>
 
     <script>
         const startButton = document.getElementById('startButton');
         const nextButtons = document.querySelectorAll('.nextButton');
+        const memoryButton = document.getElementById('memoryButton');
         const fireworksContainer = document.getElementById('fireworks');
 
         startButton.addEventListener('click', () => {
@@ -218,72 +177,63 @@
             button.addEventListener('click', (e) => {
                 const currentContent = button.parentElement;
                 const nextStep = document.getElementById(button.dataset.next);
-
                 currentContent.style.display = 'none';
+
                 if (nextStep) {
                     nextStep.style.display = 'block';
                 }
 
-                // 當顯示第三張圖片時，自動執行煙火效果
+                // 在顯示第三頁時顯示回憶按鈕
                 if (nextStep && nextStep.id === 'step3') {
-                    showIncreasingFireworks();
+                    memoryButton.style.display = 'block';
+                    showIncreasingFireworks();  // 顯示煙火效果
                 }
             });
         });
 
-        // 顯示煙火效果，數量隨著時間增加
+        memoryButton.addEventListener('click', () => {
+            // 跳轉到新的頁面
+            window.location.href = 'slideshow.html';  // 跳轉到新的頁面 (slideshow.html)
+        });
+
+        function createFirework(x, y) {
+            const firework = document.createElement('div');
+            firework.classList.add('firework');
+            firework.style.backgroundColor = getRandomColor();
+            firework.style.left = `${x}px`;
+            firework.style.top = `${y}px`;
+            firework.style.animation = `riseAndExplode 2s ease-out forwards`;
+            fireworksContainer.appendChild(firework);
+
+            const numSparks = 20;
+            for (let i = 0; i < numSparks; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+                const angle = Math.random() * 360;
+                const distance = Math.random() * 100 + 50;
+                const xOffset = Math.cos(angle) * distance;
+                const yOffset = Math.sin(angle) * distance;
+
+                spark.style.left = `${x + xOffset}px`;
+                spark.style.top = `${y + yOffset}px`;
+                spark.style.animation = `sparkAnimation 1s ease-out forwards`;
+
+                firework.appendChild(spark);
+            }
+        }
+
         function showIncreasingFireworks() {
-            fireworksContainer.style.display = 'block';
+            let count = 0;
+            const interval = setInterval(() => {
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                createFirework(x, y);
+                count++;
 
-            let fireworkInterval = 1000; // 初始間隔時間（減慢發射頻率）
-            let fireworkCount = 1; // 初始煙火數量
-
-            setInterval(() => {
-                // 隨著時間增加煙火數量
-                for (let i = 0; i < fireworkCount; i++) {
-                    // 隨機顏色
-                    const colors = ['#ff6b81', '#ffdf00', '#00ff00', '#0000ff', '#ff00ff', '#00ffff'];
-                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-                    // 隨機位置
-                    const fireworkX = Math.random() * window.innerWidth;
-                    const fireworkY = Math.random() * window.innerHeight;
-
-                    const firework = document.createElement('div');
-                    firework.classList.add('firework');
-                    firework.style.left = `${fireworkX}px`;
-                    firework.style.top = `${fireworkY}px`;
-                    firework.style.backgroundColor = randomColor;
-                    firework.style.setProperty('--x', `${(Math.random() - 0.5) * 400}px`);
-                    firework.style.setProperty('--y', `${(Math.random() - 0.5) * 400}px`);
-
-                    fireworksContainer.appendChild(firework);
-
-                    // 爆炸時生成火花
-                    setTimeout(() => {
-                        for (let j = 0; j < 10; j++) { // 減少火花數量
-                            const spark = document.createElement('div');
-                            spark.classList.add('spark');
-                            spark.style.left = `${fireworkX}px`;
-                            spark.style.top = `${fireworkY}px`;
-                            spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 300}px`);
-                            spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 300}px`);
-                            spark.style.backgroundColor = randomColor; // 火花顏色
-                            fireworksContainer.appendChild(spark);
-                            setTimeout(() => spark.remove(), 1000);
-                        }
-                    }, 1000);
-
-                    // 移除煙火
-                    setTimeout(() => {
-                        firework.remove();
-                    }, 2000);
+                if (count >= 5) {
+                    clearInterval(interval);
                 }
-
-                fireworkCount++; // 每次增加煙火數量
-                fireworkInterval = Math.max(fireworkInterval - 50, 100); // 控制煙火間隔時間縮短
-
-            }, fireworkInterval);
+            }, 300);
         }
     </script>
 </body>

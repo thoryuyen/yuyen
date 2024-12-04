@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回憶的時光</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .slideshow-container {
+            display: none;
+            width: 80%;
+            max-width: 800px;
+            height: 60%;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .slideshow-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: opacity 1s ease-in-out;
+            display: block; /* 確保圖片是可見的 */
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>回憶的時光</h1>
+
+    <!-- 日期選擇區塊 -->
+    <div class="button-container">
+        <button onclick="startSlideshow('12-1')">12月1日</button>
+        <button onclick="startSlideshow('12-2')">12月2日</button>
+    </div>
+
+    <!-- 12月1日的輪播區域 -->
+    <div class="slideshow-container" id="slideshow-12-1">
+        <img src="images/01.jpg" alt="12月1日圖片1">
+        <img src="images/02.jpg" alt="12月1日圖片2">
+        <img src="images/03.jpg" alt="12月1日圖片3">
+    </div>
+
+    <!-- 12月2日的輪播區域 -->
+    <div class="slideshow-container" id="slideshow-12-2">
+        <img src="images/04.jpg" alt="12月2日圖片1">
+        <img src="images/05.jpg" alt="12月2日圖片2">
+        <img src="images/06.jpg" alt="12月2日圖片3">
+    </div>
+
+    <script>
+        function startSlideshow(date) {
+            // 隱藏所有輪播區域
+            const allSlideshows = document.querySelectorAll('.slideshow-container');
+            allSlideshows.forEach(slideshow => slideshow.style.display = 'none');
+
+            // 顯示選中的日期的輪播區域
+            const selectedSlideshow = document.getElementById('slideshow-' + date);
+            selectedSlideshow.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
