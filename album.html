@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>相簿</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .album {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            width: 90%;
+            max-width: 500px;
+            cursor: pointer;
+        }
+
+        .album-title {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        #canvas {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #canvas-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+            position: relative;
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        #media-display {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none; /* 禁止默认触控滚动 */
+        }
+
+        img, video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>這是相簿頁面</h1>
+
+    <div class="album" onclick="openAlbum('12/7')">
+        <div class="album-title">12/7 相簿</div>
+    </div>
+
+    <div class="album" onclick="openAlbum('12/8')">
+        <div class="album-title">12/8 相簿</div>
+    </div>
+
+    <!-- 當點擊相簿後顯示的畫布 -->
+    <div id="canvas">
+        <div id="canvas-content">
+            <span id="close-btn" onclick="closeCanvas()">×</span>
+            <h2 id="canvas-title"></h2>
+            <div id="media-display" ontouchstart="startTouch(event)" ontouchmove="moveTouch(event)" ontouchend="endTouch(event)">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMediaIndex = 0;
+        let mediaList = [];
+        let startX = 0;  // 記錄觸控起始位置
+
+        // 開啟指定日期的相簿
+        function openAlbum(date) {
+            // 設置畫布顯示
+            document.getElementById('canvas').style.display = 'flex';
+            // 更新畫布標題
+            document.getElementById('canvas-title').innerText = date + ' 相簿';
+
+            // 根據日期顯示不同的相片和影片
+            if (date === '12/7') {
+                mediaList = [
+                    { type: 'img', src: 'images/05.jpg' },
+                    { type: 'img', src: 'images/06.jpg' },
+                    { type: 'img', src: 'images/07.jpg' },
+                    { type: 'video', src: '01.mp4' }
+                ];
+            } else if (date === '12/8') {
+                mediaList = [
+                    { type: 'img', src: 'photo3.jpg' },
+                    { type: 'video', src: 'video3.mp4' },
+                    { type: 'img', src: 'photo4.jpg' },
+                    { type: 'video', src: 'video4.mp4' }
+                ];
+            }
+
+            // 顯示第一張媒體
+            displayMedia();
+        }
+
+        // 顯示當前媒體
+        function displayMedia() {
+            const media = mediaList[currentMediaIndex];
+            let mediaHTML = '';
+
+            if (media.type === 'img') {
+                mediaHTML = `<img src="${media.src}" alt="media">`;
+            } else if (media.type === 'video') {
+                mediaHTML = `
+                    <video controls>
+                        <source src="${media.src}" type="video/mp4">
+                        您的瀏覽器不支援影片播放。
+                    </video>
+                `;
+            }
+
+            // 顯示當前媒體
+            document.getElementById('media-display').innerHTML = mediaHTML;
+        }
+
+        // 開始觸控
+        function startTouch(event) {
+            startX = event.touches[0].clientX;
+        }
+
+        // 移動觸控
+        function moveTouch(event) {
+            // 可選，根據需要更新觸控過程中的 UI
+        }
+
+        // 結束觸控並檢查滑動方向
+        function endTouch(event) {
+            const endX = event.changedTouches[0].clientX;
+            const diffX = startX - endX;
+
+            if (Math.abs(diffX) > 30) {
+                if (diffX > 0) {
+                    // 向左滑動，顯示下一張
+                    nextMedia();
+                } else {
+                    // 向右滑動，顯示上一張
+                    prevMedia();
+                }
+            }
+        }
+
+        // 顯示下一張媒體
+        function nextMedia() {
+            currentMediaIndex = (currentMediaIndex + 1) % mediaList.length;
+            displayMedia();
+        }
+
+        // 顯示上一張媒體
+        function prevMedia() {
+            currentMediaIndex = (currentMediaIndex - 1 + mediaList.length) % mediaList.length;
+            displayMedia();
+        }
+
+        // 關閉畫布
+        function closeCanvas() {
+            document.getElementById('canvas').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

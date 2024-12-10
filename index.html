@@ -19,12 +19,6 @@
             min-height: 100vh;
             color: #333;
             text-align: center;
-            position: relative;
-        }
-
-        h1, h2 {
-            position: relative;
-            z-index: 2;
         }
 
         h1 {
@@ -68,9 +62,9 @@
         }
 
         .content img {
-            width: 70%;
-            max-width: 400px;
-            height: auto;
+            width: 70%; /* 設定圖片的寬度為70% */
+            max-width: 400px; /* 最大寬度設為400px */
+            height: auto; /* 高度自動調整以保持長寬比 */
             margin: 20px 0;
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -82,11 +76,23 @@
             color: #fff;
         }
 
+        /* 背景動畫 */
+        @keyframes backgroundMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+        body {
+            background-size: 400% 400%;
+            animation: backgroundMove 15s infinite alternate;
+        }
+
+        /* 淡入動畫 */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* 煙火效果 */
         .fireworks {
             position: fixed;
             top: 0;
@@ -98,20 +104,30 @@
             display: none;
         }
 
-        @keyframes backgroundMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 100% 100%; }
-        }
-        body {
-            background-size: 400% 400%;
-            animation: backgroundMove 15s infinite alternate;
+        .firework {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: riseAndExplode 2s ease-out forwards;
         }
 
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkAnimation 1s ease-out forwards;
+        }
+
+        /* 添加一個新的樣式，讓圖片和文字並排顯示 */
         .text-and-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 20px; /* 設定圖片與文字之間的間隔 */
         }
 
         .text-and-image p {
@@ -120,11 +136,63 @@
             margin: 0;
         }
 
+        /* 調整表情貼圖片的大小，防止被其他屬性干擾 */
         .emoji {
-            width: 50px !important;
-            height: 50px !important;
-            object-fit: contain;
+            width: 50px !important;  /* 強制設定寬度為 50px */
+            height: 50px !important; /* 強制設定高度為 50px，保持圖片比例 */
+            object-fit: contain; /* 保持圖片比例，避免變形 */
             border-radius: 8px;
+        }
+
+        @keyframes riseAndExplode {
+            0% {
+                transform: scale(0) translate(0, 0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1) translate(0, -200px); /* 煙火升空 */
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4) translate(var(--x), var(--y)); /* 爆炸 */
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkAnimation {
+            0% {
+                opacity: 1;
+                transform: scale(0) translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5) translate(var(--sx), var(--sy));
+            }
+        }
+
+        .album-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+    
+        .album-button button {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+    
+        .album-button button:hover {
+            background-color: #ff6b81;
+            color: #fff;
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -158,83 +226,97 @@
         </div>
     </div>
 
-    <button id="memoryButton" style="display: none; position: absolute; top: 20px; right: 20px; background-color: #ff6b81; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1em; cursor: pointer;">回憶</button>
+    <button id="albumButton" style="position: fixed; top: 20px; right: 20px; padding: 10px 20px; background-color: #ff6b81; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 2000;">相簿</button>
 
-    <div id="fireworks" class="fireworks"></div>
+    <!-- 煙火效果容器 -->
+    <div class="fireworks" id="fireworks"></div>
 
     <script>
+        // 啟動按鈕邏輯
         const startButton = document.getElementById('startButton');
         const nextButtons = document.querySelectorAll('.nextButton');
-        const memoryButton = document.getElementById('memoryButton');
         const fireworksContainer = document.getElementById('fireworks');
-
+    
         startButton.addEventListener('click', () => {
             document.getElementById('step1').style.display = 'block';
             startButton.style.display = 'none';
         });
-
+    
         nextButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', () => {
                 const currentContent = button.parentElement;
                 const nextStep = document.getElementById(button.dataset.next);
+    
                 currentContent.style.display = 'none';
-
                 if (nextStep) {
                     nextStep.style.display = 'block';
                 }
-
-                // 在顯示第三頁時顯示回憶按鈕
+    
+                // 第三階段觸發煙火效果
                 if (nextStep && nextStep.id === 'step3') {
-                    memoryButton.style.display = 'block';
-                    showIncreasingFireworks();  // 顯示煙火效果
+                    showIncreasingFireworks();
                 }
             });
         });
-
-        memoryButton.addEventListener('click', () => {
-            // 跳轉到新的頁面
-            window.location.href = 'slideshow.html';  // 跳轉到新的頁面 (slideshow.html)
-        });
-
-        function createFirework(x, y) {
-            const firework = document.createElement('div');
-            firework.classList.add('firework');
-            firework.style.backgroundColor = getRandomColor();
-            firework.style.left = `${x}px`;
-            firework.style.top = `${y}px`;
-            firework.style.animation = `riseAndExplode 2s ease-out forwards`;
-            fireworksContainer.appendChild(firework);
-
-            const numSparks = 20;
-            for (let i = 0; i < numSparks; i++) {
-                const spark = document.createElement('div');
-                spark.classList.add('spark');
-                const angle = Math.random() * 360;
-                const distance = Math.random() * 100 + 50;
-                const xOffset = Math.cos(angle) * distance;
-                const yOffset = Math.sin(angle) * distance;
-
-                spark.style.left = `${x + xOffset}px`;
-                spark.style.top = `${y + yOffset}px`;
-                spark.style.animation = `sparkAnimation 1s ease-out forwards`;
-
-                firework.appendChild(spark);
-            }
-        }
-
+    
+        // 煙火效果函式
         function showIncreasingFireworks() {
-            let count = 0;
-            const interval = setInterval(() => {
-                const x = Math.random() * window.innerWidth;
-                const y = Math.random() * window.innerHeight;
-                createFirework(x, y);
-                count++;
-
-                if (count >= 5) {
-                    clearInterval(interval);
+            fireworksContainer.style.display = 'block';
+    
+            let fireworkInterval = 1000; // 初始間隔時間
+            let fireworkCount = 1;       // 初始煙火數量
+    
+            setInterval(() => {
+                for (let i = 0; i < fireworkCount; i++) {
+                    const colors = ['#ff6b81', '#ffdf00', '#00ff00', '#0000ff', '#ff00ff', '#00ffff'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+                    const fireworkX = Math.random() * window.innerWidth;
+                    const fireworkY = Math.random() * window.innerHeight;
+    
+                    const firework = document.createElement('div');
+                    firework.classList.add('firework');
+                    firework.style.left = `${fireworkX}px`;
+                    firework.style.top = `${fireworkY}px`;
+                    firework.style.backgroundColor = randomColor;
+                    firework.style.setProperty('--x', `${(Math.random() - 0.5) * 400}px`);
+                    firework.style.setProperty('--y', `${(Math.random() - 0.5) * 400}px`);
+    
+                    fireworksContainer.appendChild(firework);
+    
+                    setTimeout(() => {
+                        for (let j = 0; j < 10; j++) {
+                            const spark = document.createElement('div');
+                            spark.classList.add('spark');
+                            spark.style.left = `${fireworkX}px`;
+                            spark.style.top = `${fireworkY}px`;
+                            spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 300}px`);
+                            spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 300}px`);
+                            spark.style.backgroundColor = randomColor;
+                            fireworksContainer.appendChild(spark);
+                            setTimeout(() => spark.remove(), 1000);
+                        }
+                    }, 1000);
+    
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 2000);
                 }
-            }, 300);
+    
+                fireworkCount++;
+                fireworkInterval = Math.max(fireworkInterval - 50, 10);
+            }, fireworkInterval);
         }
+    
+        // 確保「相簿」按鈕正常跳轉
+        const albumButton = document.getElementById('albumButton');
+        albumButton.addEventListener('click', () => {
+            window.location.href = 'album.html'; // 確保目標頁面名稱正確
+        });
     </script>
+
+    
+
+
 </body>
 </html>
